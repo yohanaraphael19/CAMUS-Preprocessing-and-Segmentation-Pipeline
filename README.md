@@ -15,9 +15,8 @@ This repository provides a comprehensive pipeline for preprocessing the CAMUS da
 - **Integration**: Outputs structured to feed directly into the U-Net segmentation workflow.
 - **Results**: Improved predictions and Dice scores through refined preprocessing.
 
-## Visuals![result_0](https://github.com/user-attachments/assets/bc5deffd-1054-4db1-853c-60273e2371d1)
-
-![Ground Truth vs. Predictions]
+## Visuals!
+![result_6](https://github.com/user-attachments/assets/282f7e49-5048-4bb1-8f6d-307d56bdc54b)
 
 ## Usage
 
