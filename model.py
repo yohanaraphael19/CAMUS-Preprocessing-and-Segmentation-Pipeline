@@ -10,49 +10,71 @@
 # model.py
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 class UNet(nn.Module):
     def __init__(self):
         super(UNet, self).__init__()
-        self.enc1 = self.contracting_block(1, 64)
-        self.enc2 = self.contracting_block(64, 128)
-        self.bottleneck = self.contracting_block(128, 256)
-        self.dec2 = self.expansive_block(256, 128)
-        self.dec1 = self.expansive_block(128, 64)
-        self.final = nn.Conv2d(64, 1, kernel_size=1, padding=0)
+        
+        # Encoder (Contracting Path)
+        self.enc1 = self._block(1, 64)
+        self.pool1 = nn.MaxPool2d(2)
+        self.enc2 = self._block(64, 128)
+        self.pool2 = nn.MaxPool2d(2)
+        self.enc3 = self._block(128, 256)
+        self.pool3 = nn.MaxPool2d(2)
+        self.enc4 = self._block(256, 512)
+        self.pool4 = nn.MaxPool2d(2)
+        
+        # Bottleneck
+        self.bottleneck = self._block(512, 1024)
+        
+        # Decoder (Expansive Path)
+        self.up4 = nn.ConvTranspose2d(1024, 512, kernel_size=2, stride=2)
+        self.dec4 = self._block(1024, 512)
+        self.up3 = nn.ConvTranspose2d(512, 256, kernel_size=2, stride=2)
+        self.dec3 = self._block(512, 256)
+        self.up2 = nn.ConvTranspose2d(256, 128, kernel_size=2, stride=2)
+        self.dec2 = self._block(256, 128)
+        self.up1 = nn.ConvTranspose2d(128, 64, kernel_size=2, stride=2)
+        self.dec1 = self._block(128, 64)
+        
+        self.final = nn.Conv2d(64, 1, kernel_size=1)
 
-    def contracting_block(self, in_channels, out_channels):
+    def _block(self, in_channels, out_channels):
         return nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, kernel_size=2, padding=1),
+            nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1),
+            nn.BatchNorm2d(out_channels),
             nn.ReLU(inplace=True),
             nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2)
-        )
-
-    def expansive_block(self, in_channels, out_channels):
-        return nn.Sequential(
-            nn.ConvTranspose2d(in_channels, out_channels, kernel_size=2, stride=2),
-            nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1),
+            nn.BatchNorm2d(out_channels),
             nn.ReLU(inplace=True)
         )
 
     def forward(self, x):
+        # Encoder
         enc1 = self.enc1(x)
-        enc2 = self.enc2(enc1)
-        bottleneck = self.bottleneck(enc2)
-        dec2 = self.dec2(bottleneck)
-        dec1 = self.dec1(dec2 + enc2)
-        out = self.final(dec1 + enc1)
-
-        # Resize output to match the size of the masks (256x256)
-        out_resized = F.interpolate(out, size=(256, 256), mode='bilinear', align_corners=False)
-        return torch.sigmoid(out_resized)
-
-# In your train function, you can leave the rest as is, but the resizing will ensure the output and masks are compatible in size.
-
-
-
+        enc2 = self.enc2(self.pool1(enc1))
+        enc3 = self.enc3(self.pool2(enc2))
+        enc4 = self.enc4(self.pool3(enc3))
+        
+        # Bottleneck
+        bottleneck = self.bottleneck(self.pool4(enc4))
+        
+        # Decoder with skip connections
+        dec4 = self.up4(bottleneck)
+        dec4 = torch.cat([dec4, enc4], dim=1)
+        dec4 = self.dec4(dec4)
+        
+        dec3 = self.up3(dec4)
+        dec3 = torch.cat([dec3, enc3], dim=1)
+        dec3 = self.dec3(dec3)
+        
+        dec2 = self.up2(dec3)
+        dec2 = torch.cat([dec2, enc2], dim=1)
+        dec2 = self.dec2(dec2)
+        
+        dec1 = self.up1(dec2)
+        dec1 = torch.cat([dec1, enc1], dim=1)
+        dec1 = self.dec1(dec1)
+        
+        return torch.sigmoid(self.final(dec1))
