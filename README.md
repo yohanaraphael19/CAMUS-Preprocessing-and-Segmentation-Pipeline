@@ -1,8 +1,8 @@
 # CAMUS-Preprocessing-and-Segmentation-Pipeline
 Pipeline for preprocessing the CAMUS echocardiography dataset and training a U-Net-based model for automated heart segmentation. Includes 
-### NIFTI to PNG conversion (process_camus_dataset.py),
-### Image rotation (rotate the png files 90 to get correct position) , and 
-### A structured deep learning workflow for improved accuracy and efficiency.
+        1. **NIFTI to PNG conversion** (process_camus_dataset.py)
+        2. **Image rotation** (rotate the PNG files 90° to get correct position)
+        3. **A structured deep learning workflow for improved accuracy and efficiency**
 
 ## Problem Statement
 Accurate segmentation of echocardiography images is crucial for diagnosing and managing cardiovascular diseases. Echocardiography provides a non-invasive method to assess heart structure and function, but manual segmentation of these images is time-consuming, prone to variability, and requires expert knowledge. Automated segmentation using deep learning can improve consistency, efficiency, and accessibility of echocardiographic analysis.
