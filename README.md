@@ -20,16 +20,55 @@ This repository provides a comprehensive pipeline for preprocessing the CAMUS da
 
 ## Usage
 
-### Preprocessing steps
-- python nifti_shape.py --input_dir CAMUS_public/ database_nifti
--   python process_camus_dataset.py --input_dir CAMUS_public/database_nifti \
-    --output_image_dir output_data/images \
-    --output_mask_dir output_data/masks \
-    --slice_axis 2
-- python png-rotate-90-ac.py --input_dir output_data/images \
-    --output_dir output_data/rotated/images
-python png-rotate-90-ac.py --input_dir output_data/masks \
-    --output_dir output_data/rotated/masks
+# Echocardiography Segmentation Workflow
+
+## Overview
+This repository provides a structured workflow for processing and analyzing echocardiography images using deep learning. The primary steps include converting NIFTI files to PNG, correcting image orientation, and implementing a deep learning workflow to achieve accurate segmentation.
+
+## Data Source
+The dataset used in this workflow is the **CAMUS dataset**, which can be downloaded from the following link:  
+[https://www.creatis.insa-lyon.fr/Challenge/camus/](https://www.creatis.insa-lyon.fr/Challenge/camus/)
+
+### Citation
+If you use the CAMUS dataset in your research, you **must cite** the following paper:
+
+> S. Leclerc, E. Smistad, J. Pedrosa, A. Ostvik, et al.,  
+> "**Deep Learning for Segmentation using an Open Large-Scale Dataset in 2D Echocardiography**,"  
+> *IEEE Transactions on Medical Imaging*, vol. 38, no. 9, pp. 2198-2210, Sept. 2019.  
+> DOI: [10.1109/TMI.2019.2900516](https://doi.org/10.1109/TMI.2019.2900516)
+
+---
+
+## Workflow Steps
+
+### 1. Download and Unzip Data
+- Download the CAMUS dataset from the official website.  
+- After downloading, unzip the dataset to prepare for processing.
+
+### 2. Convert NIFTI to PNG
+- Use the provided script (`process_camus_dataset.py`) to convert NIFTI files into PNG images for easier manipulation and visualization.  
+
+### 3. Rotate Images
+- Rotate the PNG files by **90°** to ensure the correct orientation of the images.  
+
+### 4. Deep Learning Workflow
+- Follow the structured deep learning pipeline to process the data for training and segmentation.  
+- The pipeline is designed to improve **accuracy** and **efficiency**.  
+
+---
+
+## Requirements
+- Python 3.8+
+- PyTorch
+- NumPy
+- Matplotlib
+
+---
+
+## Notes
+- Ensure all dependencies are installed before running the scripts.
+- For any questions or issues, feel free to open an issue or reach out to the repository maintainer.
+
 
 ## Contribution
 Contributions are welcome! Please open issues or submit pull requests for bugs, enhancements, or new features.
