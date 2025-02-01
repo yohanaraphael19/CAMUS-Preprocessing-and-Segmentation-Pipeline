@@ -16,7 +16,8 @@ This repository provides a comprehensive pipeline for preprocessing the CAMUS da
 - **Results**: Improved predictions and Dice scores through refined preprocessing.
 
 ## Visuals!
-![result_6](https://github.com/user-attachments/assets/282f7e49-5048-4bb1-8f6d-307d56bdc54b)
+
+![result_3](https://github.com/user-attachments/assets/b5e97a3a-5c5c-457f-8f4f-bb4ab50913f8)
 
 ## Usage
 
