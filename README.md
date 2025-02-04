@@ -18,6 +18,8 @@ This repository provides a comprehensive pipeline for preprocessing the CAMUS da
 ## Visuals!
 
 ![result_3](https://github.com/user-attachments/assets/b5e97a3a-5c5c-457f-8f4f-bb4ab50913f8)
+![training_metrics](https://github.com/user-attachments/assets/74c4dc2d-51b8-4720-8c56-f814e92ed367)
+
 
 ## Usage
 
