@@ -1,8 +1,11 @@
 import os
 from PIL import Image
-import numpy as np
 import torch
+from torch.utils.data import Dataset
 from torchvision import transforms
+import random
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 
 def get_image_and_mask_paths(image_dir, mask_dir):
     image_paths = []
@@ -25,22 +28,27 @@ def get_image_and_mask_paths(image_dir, mask_dir):
     return image_paths, mask_paths
 
 
-class EchoDataset(torch.utils.data.Dataset):
-    def __init__(self, images, masks, is_train=True):
+class EchoDataset(Dataset):
+    def __init__(self, images, masks, is_train=True, augment=False):
         self.images = images
         self.masks = masks
         self.is_train = is_train
-        
-        # Image transformations (with augmentation for training)
-        self.image_transform = transforms.Compose([
+        self.augment = augment  # Store the augmentation flag
+
+        # Base transformations (applied to both training and validation)
+        self.base_transforms = transforms.Compose([
             transforms.Grayscale(num_output_channels=1),
             transforms.Resize((256, 256)),
-            transforms.RandomHorizontalFlip(p=0.5) if is_train else transforms.Lambda(lambda x: x),
-            transforms.RandomRotation(degrees=10) if is_train else transforms.Lambda(lambda x: x),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5], std=[0.5])
         ])
-        
+
+        # Augmentations (only applied when training and augment=True)
+        self.augmentation_transforms = transforms.Compose([
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.RandomRotation(degrees=10),
+        ]) if self.augment else None
+
         # Mask transformations (no normalization)
         self.mask_transform = transforms.Compose([
             transforms.Grayscale(num_output_channels=1),
@@ -54,21 +62,29 @@ class EchoDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         image = Image.open(self.images[idx]).convert("L")
         mask = Image.open(self.masks[idx]).convert("L")
-        
-        image = self.image_transform(image)
+
+        # Apply augmentations if enabled
+        if self.augment and self.augmentation_transforms:
+            image = self.augmentation_transforms(image)
+
+        image = self.base_transforms(image)
         mask = self.mask_transform(mask)
         mask = (mask > 0.5).float()  # Ensure binary mask
-        
+
         return image, mask
 
-def load_dataset(image_dir, mask_dir, val_split=0.2):
+def load_dataset(image_dir, mask_dir, val_split=0.2, shuffle=True):
     image_paths, mask_paths = get_image_and_mask_paths(image_dir, mask_dir)
-    assert len(image_paths) > 0, "No matched image-mask pairs found!"
-    
+
+    # Shuffle before splitting if enabled
+    if shuffle:
+        combined = list(zip(image_paths, mask_paths))
+        random.shuffle(combined)
+        image_paths, mask_paths = zip(*combined)
+
     split_idx = int((1 - val_split) * len(image_paths))
+
     return (
         (image_paths[:split_idx], mask_paths[:split_idx]),  # Train
         (image_paths[split_idx:], mask_paths[split_idx:])   # Val
     )
-
-
