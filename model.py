@@ -1,19 +1,11 @@
-#project structure
-#├── dataset.py            Dataset and preprocessing for PNG files
-#├── model.py              U-Net architecture
-#├── utils.py              Helper functions (e.g., metrics, visualizations)
-#├── train_validation.py   Training and validation loop
-#├── main.py               Main script to coordinate everything
-#├── saved_images/         Folder to save segmentation results
-
-
 # model.py
 import torch
 import torch.nn as nn
 
 class UNet(nn.Module):
-    def __init__(self):
+    def __init__(self, dropout_rate=0.3):
         super(UNet, self).__init__()
+        self.dropout_rate = dropout_rate
         
         # Encoder (Contracting Path)
         self.enc1 = self._block(1, 64)
@@ -45,9 +37,11 @@ class UNet(nn.Module):
             nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1),
             nn.BatchNorm2d(out_channels),
             nn.ReLU(inplace=True),
+            nn.Dropout2d(p=self.dropout_rate),  # Dropout uses class variable
             nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1),
             nn.BatchNorm2d(out_channels),
-            nn.ReLU(inplace=True)
+            nn.ReLU(inplace=True),
+            nn.Dropout2d(p=self.dropout_rate)   # Dropout uses class variable
         )
 
     def forward(self, x):
