@@ -4,6 +4,14 @@ Pipeline for preprocessing the CAMUS echocardiography dataset and training a U-N
         2. **Image rotation** (rotate the PNG files 90° to get correct position)
         3. **A structured deep learning workflow for improved accuracy and efficiency**
 
+#project structure
+#├── dataset.py            Dataset and preprocessing for PNG files
+#├── model.py              U-Net architecture
+#├── utils.py              Helper functions (e.g., metrics, visualizations)
+#├── train_validation.py   Training and validation loop
+#├── main.py               Main script to coordinate everything
+#├── saved_images/         Folder to save segmentation results
+
 ## Problem Statement
 Accurate segmentation of echocardiography images is crucial for diagnosing and managing cardiovascular diseases. Echocardiography provides a non-invasive method to assess heart structure and function, but manual segmentation of these images is time-consuming, prone to variability, and requires expert knowledge. Automated segmentation using deep learning can improve consistency, efficiency, and accessibility of echocardiographic analysis.
 
