@@ -1,4 +1,3 @@
-# utils.py
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -8,6 +7,16 @@ def dice_coefficient(y_true, y_pred, smooth=1e-6):
     y_pred = y_pred.squeeze() > 0.5
     intersection = np.sum(y_true * y_pred)
     return (2. * intersection + smooth) / (np.sum(y_true) + np.sum(y_pred) + smooth)
+
+def iou_score(y_true, y_pred, smooth=1e-6):
+    intersection = np.sum(y_true * y_pred)
+    union = np.sum(y_true) + np.sum(y_pred) - intersection
+    return (intersection + smooth) / (union + smooth)
+
+def accuracy(y_true, y_pred):
+    correct = np.sum(y_true == y_pred)
+    total = np.prod(y_true.shape)
+    return correct / total
 
 def save_predictions(images, masks, preds, save_dir):
     os.makedirs(save_dir, exist_ok=True)
