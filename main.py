@@ -1,3 +1,11 @@
+#project structure
+#├── dataset.py            Dataset and preprocessing for PNG files
+#├── model.py              U-Net architecture
+#├── utils.py              Helper functions (e.g., metrics, visualizations)
+#├── train_validation.py   Training and validation loop
+#├── main.py               Main script to coordinate everything
+#├── saved_images/         Folder to save segmentation results
+#├── saved_metrics/        Folder to save metrics 
 import os
 import torch
 import matplotlib.pyplot as plt
